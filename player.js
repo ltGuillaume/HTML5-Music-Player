@@ -1,5 +1,5 @@
 "use strict";
-var track,audio,pic,title,ID3,shuffle,repeat,loop,err,playlist,offset,unPlayed,
+var track,audio,pic,title,ID3,queue,shuffle,repeat,loop,err,playlist,offset,unPlayed,
 	log=false,// Show messages in brower console
 	music=Array(),
 	hst={
@@ -90,7 +90,7 @@ function setPlayed(i,test){
 			}
 		}
 		else{
-			log('Tack',i,'was Skipped');
+			log('Track',i,'was Skipped');
 			i++;
 		}
 	}
@@ -165,6 +165,12 @@ function populateList(arr,e,dir){
 				li.addEventListener('click',function(event){
 					event.stopPropagation();
 					if(hst.nav){// manual navigation
+						if(queue.checked) {
+							if (hst.indx==hst.log.length)
+								hst.add();
+							hst.log.push(parseInt(this.id));
+							return;
+						}
 						hst.add();
 						hst.indx=hst.log.length;
 						setPlayed(track,true);
@@ -275,6 +281,7 @@ function init(){
 			"track":0,
 			"state":false,
 			"time":0,
+			"queue":false,
 			"shuffle":true,
 			"repeat":true,
 			"loop":false,
@@ -294,6 +301,7 @@ function init(){
 		"year":getId('id3_year')
 	};
 	pic=getId('cover');
+	queue=getId('queue');
 	shuffle=getId('shuffle');
 	loop=getId('loop');
 	repeat=getId('repeat');
@@ -369,7 +377,7 @@ function init(){
 		else if(hst.indx>hst.log.length){
 			hst.add();
 		}
-		if(shuffle.checked){
+		if(shuffle.checked && hst.indx==hst.log.length){
 			log('Shuffle Tracks');
 			if(repeat.checked){
 				log('Allow Repeats');
@@ -426,6 +434,7 @@ function init(){
 			reloadUnPlayed(false);
 		}
 	},false);
+	queue.checked=config.queue;
 	shuffle.checked=config.shuffle;
 	loop.checked=config.loop;
 	repeat.checked=config.repeat;
@@ -463,6 +472,7 @@ function init(){
 			"track":track,
 			"state":audio.paused===true,
 			"time":audio.currentTime,
+			"queue":queue.checked===true,
 			"shuffle":shuffle.checked===true,
 			"repeat":repeat.checked===true,
 			"loop":loop.checked===true,
@@ -481,6 +491,7 @@ function init(){
 			case 39:getId('next').click();return;// right arrow
 			case 38:audio.currentTime+=5;return;// up arrow
 			case 40:audio.currentTime-=5;return;// down arrow
+			case 81:if(!event.ctrlKey) queue.checked=!queue.checked;return;// q
 			case 83:if(!event.ctrlKey) shuffle.checked=!shuffle.checked;return;// s
 			case 82:if(!event.ctrlKey) repeat.checked=!repeat.checked;return;// r
 			case 76:if(!event.ctrlKey) loop.click();return;// l
