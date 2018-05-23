@@ -370,14 +370,14 @@ function init(){
 		hst.nav=false;
 		hst.indx++;
 		if(hst.log.length>hst.indx){
-			log('Back feature was used:',hst.indx,'of',hst.log.length);
+			log((queue.checked ? 'Songs queued or ' : '')+'Back was used:',hst.indx,'of',hst.log.length);
 			sendEvt(music[hst.log[hst.indx]],'click');
 			return true;
 		}
 		else if(hst.indx>hst.log.length){
 			hst.add();
 		}
-		if(shuffle.checked && hst.indx==hst.log.length){
+		if(shuffle.checked){
 			log('Shuffle Tracks');
 			if(repeat.checked){
 				log('Allow Repeats');
